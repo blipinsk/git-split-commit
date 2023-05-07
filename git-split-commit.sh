@@ -4,12 +4,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-PATH_TO_SCRIPT=$(dirname "$(readlink -f "$0")")
+SCRIPT_DIR_ABSOLUTE=$(dirname "$(readlink -f "$0")")
 
-source "$PATH_TO_SCRIPT/internal/confirmations.sh"
-source "$PATH_TO_SCRIPT/internal/git_utils.sh"
-source "$PATH_TO_SCRIPT/internal/info.sh"
-source "$PATH_TO_SCRIPT/internal/preconditions.sh"
+source "$SCRIPT_DIR_ABSOLUTE/internal/confirmations.sh"
+source "$SCRIPT_DIR_ABSOLUTE/internal/git_utils.sh"
+source "$SCRIPT_DIR_ABSOLUTE/internal/info.sh"
+source "$SCRIPT_DIR_ABSOLUTE/internal/preconditions.sh"
 
 print_welcome
 
