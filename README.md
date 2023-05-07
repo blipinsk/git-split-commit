@@ -10,7 +10,10 @@ How to use
 
 To split a Git commit, run the script with the hash of the commit to split as the only argument:
 ```shell
-./git-split-commit.sh <commit-hash>
+Usage: ./git-split-commit.sh <commit_hash> [options]
+Options:
+  --version, -v     Prints the version of the script
+  --help, -h        Prints this usage message
 ```
 
 Example
