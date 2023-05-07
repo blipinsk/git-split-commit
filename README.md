@@ -13,11 +13,14 @@ How does it work?
 Installation
 ============
 
-This step is _optional_, but strongly advised. You can use the script directly without installing the git alias, but git alias makes it much better.
+1. Clone the repo
+2. (_optional_) Install git alias
 
 ```shell
 ./install-git-alias.sh
 ```
+
+Although the second step is _optional_, it is strongly advised. You can use the script directly without installing the git alias, but git alias makes it much better.
 
 Usage
 =====
