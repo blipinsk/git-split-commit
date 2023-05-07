@@ -4,28 +4,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-# Function for silent git commands
-git_silent() {
-  git "$@" &>/dev/null
-}
+PATH_TO_SCRIPT=$(dirname "$(readlink -f "$0")")
 
-# Function for capturing git command output while silencing errors
-git_capture_output() {
-  git "$@" 2>/dev/null
-}
+source "$PATH_TO_SCRIPT/internal/confirmations.sh"
+source "$PATH_TO_SCRIPT/internal/git_utils.sh"
+source "$PATH_TO_SCRIPT/internal/info.sh"
+source "$PATH_TO_SCRIPT/internal/preconditions.sh"
 
-echo -e ""
-echo -e "          _ __                   ___ __                                       _ __ "
-echo -e "   ____ _(_) /_      _________  / (_) /_      _________  ____ ___  ____ ___  (_) /_"
-echo -e "  / __ \`/ / __/_____/ ___/ __ \/ / / __/_____/ ___/ __ \/ __ \`__ \/ __ \`__ \/ / __/"
-echo -e " / /_/ / / /_/_____(__  ) /_/ / / / /_/_____/ /__/ /_/ / / / / / / / / / / / / /_  "
-echo -e " \__, /_/\__/     /____/ .___/_/_/\__/      \___/\____/_/ /_/ /_/_/ /_/ /_/_/\__/  "
-echo -e "/____/                /_/                                                       "
-echo -e ""
-
+print_welcome
 
 # Initialize variables to hold the arguments
 COMMIT_HASH=""
+
 # Loop through all the arguments
 while [[ $# -gt 0 ]]
 do
@@ -36,41 +26,49 @@ do
             COMMIT_HASH="$key"
             shift # Move on to the next argument
             ;;
+        # If the argument is the version or -v flag, set the variable to true
+        --help|-h)
+            print_usage
+            ;;
+        # If the argument is the version or -v flag, set the variable to true
+        --version|-v)
+            print_version
+            ;;
         # If the argument is anything else, display an error message
         *)
             echo "Invalid argument: $key"
-            exit 1 # Exit the script with an error code
+            print_usage
             ;;
     esac
 done
 
 if [[ -z "$COMMIT_HASH" ]]; then
-  echo -e "\n📝 Usage: $0 <commit-hash>\n"
-  exit 1
+  print_usage
 fi
 
 SHORT_HASH=$(git_capture_output rev-parse --short "${COMMIT_HASH}")
 CURRENT_BRANCH=$(git_capture_output rev-parse --abbrev-ref HEAD)
 TEMP_BRANCH="splitting-commit-${SHORT_HASH}"
 
-# Ensure the working tree is clean
-if ! git_capture_output diff-index --quiet HEAD --; then
-  echo -e "\n🚧 Your working tree is not clean. Please commit or stash your changes before running this script.\n"
-  exit 1
+require_clean_working_tree
+require_commit_in_history "$COMMIT_HASH"
+
+# Check if the current branch has a remote tracking branch
+if ! check_remote_tracking_branch "$CURRENT_BRANCH"; then
+  confirm_destructive_operation
+fi
+
+# Check if the current branch has a remote tracking branch
+if ! check_remote_branch_up_to_date "$CURRENT_BRANCH"; then
+  confirm_destructive_operation
 fi
 
 # Check if the temporary branch already exists
-if git_capture_output show-ref --verify --quiet "refs/heads/${TEMP_BRANCH}"; then
-  echo -e "\n⚠️ The temporary branch '${TEMP_BRANCH}' already exists.\n"
-  read -p "Do you want to delete the existing temporary branch and proceed? (y/n): " confirm_delete
-  if [[ "$confirm_delete" == "y" ]]; then
-    git_silent branch -D "${TEMP_BRANCH}"
-    echo -e "\n  ✅ Existing temporary branch deleted.\n"
-  else
-    echo -e "\n  🛑 Exiting without making any changes.\n"
-    exit 1
-  fi
+if ! check_if_temp_branch_exists $TEMP_BRANCH; then
+  confirm_temp_branch_removal
 fi
+
+# TODO check if commit is in the history
 
 echo -e "👷‍♂️ Beginning the splitting procedure...\n"
 
@@ -88,7 +86,6 @@ for file in $(git_capture_output status --porcelain | awk '{print $2}'); do
   echo -e "  ✅ Changes to ${file} have been committed.\n"
 done
 
-
 echo -e "👷‍♂️ Rebasing '${CURRENT_BRANCH}' onto the temporary branch\n"
 git_silent checkout "${CURRENT_BRANCH}"
 git_silent rebase "${TEMP_BRANCH}"
@@ -98,13 +95,7 @@ git_silent branch -D "${TEMP_BRANCH}"
 
 # Output the temporary branch
 echo -e "🎉 The rebase process has been completed successfully!"
-echo -e "  ✅ '$COMMIT_HASH' has been split into one commit per modified file.\n"
+echo -e "\n  ✅ '$COMMIT_HASH' has been split into one commit per modified file.\n"
 
 # Confirm if the user wants to push the changes
-read -p "🚀 Do you want to force push the changes to the original branch? (y/n): " confirm_push
-if [[ "$confirm_push" == "y" ]]; then
-  git_silent push --force
-  echo -e "\n  🎯 Changes force pushed to the original branch!\n"
-else
-  echo -e "\n  🏃‍♂️ Changes not pushed. You can push them manually.\n"
-fi
+confirm_force_push
