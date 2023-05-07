@@ -35,7 +35,7 @@ function check_if_temp_branch_exists {
 }
 
 
-# Function to check if the remote tracking branch is up to date
+# Function to check if the current working tree is clean
 function require_clean_working_tree {
   if [[ -n $(git status -s) ]]; then
     echo -e "\n🚧 Your working tree is not clean. Please commit or stash your changes before running this script.\n"
@@ -44,7 +44,7 @@ function require_clean_working_tree {
   fi
 }
 
-# Function to check if the remote tracking branch is up to date
+# Function to check if the commit is in the Git history
 function require_commit_in_history {
   local commit_hash=$1
 

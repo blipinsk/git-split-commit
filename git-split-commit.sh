@@ -68,8 +68,6 @@ if ! check_if_temp_branch_exists $TEMP_BRANCH; then
   confirm_temp_branch_removal
 fi
 
-# TODO check if commit is in the history
-
 echo -e "👷‍♂️ Beginning the splitting procedure...\n"
 
 echo -e "🌟 Creating a temporary branch: ${TEMP_BRANCH}\n"
