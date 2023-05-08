@@ -29,6 +29,7 @@ To split a Git commit, run the git alias for the script with the hash of the com
 ```shell
 Usage: git split-commit <commit_hash> [options]
 Options:
+  --no-push, -np    Skips the offer to **force** push the original branch
   --version, -v     Prints the version of the script
   --help, -h        Prints this usage message
 ```
