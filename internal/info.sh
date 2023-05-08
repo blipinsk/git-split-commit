@@ -32,6 +32,7 @@ function print_welcome {
 function print_usage {
     if git_alias_exists $GIT_ALIAS; then
         print_git_alias_usage
+        echo -e "\n⚠️  If the git alias ('git $GIT_ALIAS') is not working correctly, reinstall it using './install-git-alias'"
     else
         print_shell_script_usage
     fi
@@ -40,14 +41,11 @@ function print_usage {
 function print_shell_script_usage {
     echo "Usage: $0 <commit_hash> [options]"
     print_options
-    exit 1 # Exit the script with an error code
 }
 
 function print_git_alias_usage {
     echo "Usage: git $GIT_ALIAS <commit_hash> [options]"
     print_options
-    echo -e "\n⚠️  If the git alias ('git $GIT_ALIAS') is not working correctly, reinstall it using './install-git-alias'"
-    exit 1 # Exit the script with an error code
 }
 
 function print_options {
@@ -58,5 +56,4 @@ function print_options {
 
 function print_version {
     echo "Version $VERSION"
-    exit 0 # Exit the script with a success code
 }

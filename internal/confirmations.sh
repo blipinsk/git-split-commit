@@ -30,7 +30,9 @@ function confirm_temp_branch_removal {
 
 # Function to prompt the user to confirm if the they want to push the changes
 function confirm_force_push {
-  read -p "🚀 Do you want to force push the changes to the original branch? (y/n): " confirm_push
+  local original_branch=$1
+  echo -e "⚠️  WARNING: This is a destructive operation (proceed with caution)."
+  read -p " ↪  Do you want to *FORCE* push the changes to the original branch '$original_branch'? (y/n): " confirm_push
   if [[ "$confirm_push" == "y" ]]; then
     git_silent push --force
     echo -e "\n  🎯 Changes force pushed to the original branch!\n"

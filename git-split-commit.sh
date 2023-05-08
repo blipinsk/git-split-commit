@@ -26,24 +26,28 @@ do
             COMMIT_HASH="$key"
             shift # Move on to the next argument
             ;;
-        # If the argument is the version or -v flag, set the variable to true
+        # If the argument is the help or -h flag, print usage instructions
         --help|-h)
             print_usage
+            exit 0
             ;;
-        # If the argument is the version or -v flag, set the variable to true
+        # If the argument is the version or -v flag, print version
         --version|-v)
             print_version
+            exit 0
             ;;
         # If the argument is anything else, display an error message
         *)
             echo "Invalid argument: $key"
             print_usage
+            exit 1
             ;;
     esac
 done
 
 if [[ -z "$COMMIT_HASH" ]]; then
   print_usage
+  exit 1
 fi
 
 SHORT_HASH=$(git_capture_output rev-parse --short "${COMMIT_HASH}")
@@ -96,4 +100,4 @@ echo -e "🎉 The rebase process has been completed successfully!"
 echo -e "\n  ✅ '$COMMIT_HASH' has been split into one commit per modified file.\n"
 
 # Confirm if the user wants to push the changes
-confirm_force_push
+confirm_force_push "$CURRENT_BRANCH"
