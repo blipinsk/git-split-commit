@@ -15,6 +15,7 @@ print_welcome
 
 # Initialize variables to hold the arguments
 COMMIT_HASH=""
+NO_PUSH=false
 
 # Loop through all the arguments
 while [[ $# -gt 0 ]]
@@ -24,6 +25,11 @@ do
         # If the argument is a commit hash, assign it to the variable
         [0-9a-fA-F]*)
             COMMIT_HASH="$key"
+            shift # Move on to the next argument
+            ;;
+        # If the argument is the no-push or -np flag, set the variable to true
+        --no-push|-np)
+            NO_PUSH=true
             shift # Move on to the next argument
             ;;
         # If the argument is the help or -h flag, print usage instructions
@@ -99,5 +105,7 @@ git_silent branch -D "${TEMP_BRANCH}"
 echo -e "🎉 The rebase process has been completed successfully!"
 echo -e "\n  ✅ '$COMMIT_HASH' has been split into one commit per modified file.\n"
 
-# Confirm if the user wants to push the changes
+if ! $NO_PUSH ; then
+  # Confirm if the user wants to push the changes
 confirm_force_push "$CURRENT_BRANCH"
+fi
