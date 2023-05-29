@@ -1,3 +1,9 @@
+Version 1.1.0 *(2023-05-29)*
+-----------------------------------
+
+* Feature: `--keep-temp-branch` option addded
+* Bug fix: protecting refs on rebase (if using update-refs by default)
+
 Version 1.0.2 *(2023-05-08)*
 -----------------------------------
 
