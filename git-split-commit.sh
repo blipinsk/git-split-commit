@@ -98,7 +98,7 @@ done
 
 echo -e "👷‍♂️ Rebasing '${CURRENT_BRANCH}' onto the temporary branch\n"
 git_silent checkout "${CURRENT_BRANCH}"
-git_silent rebase "${TEMP_BRANCH}"
+git_silent rebase --no-update-refs "${TEMP_BRANCH}"
 
 echo -e "🔥 Removing the temporary branch: ${TEMP_BRANCH}\n"
 git_silent branch -D "${TEMP_BRANCH}"
