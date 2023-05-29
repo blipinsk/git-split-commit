@@ -52,9 +52,10 @@ function print_git_alias_usage {
 
 function print_options {
     echo "Options:"
-    echo "  --no-push, -np    Skips the offer to **force** push the original branch"
-    echo "  --version, -v     Prints the version of the script"
-    echo "  --help, -h        Prints this usage message"
+    echo "  --no-push, -np              Skips the offer to **force** push the original branch"
+    echo "  --keep-temp-branch, -ktb    Retains the temporary branch used to split the commit"
+    echo "  --version, -v               Prints the version of the script"
+    echo "  --help, -h                  Prints this usage message"
 }
 
 function print_version {

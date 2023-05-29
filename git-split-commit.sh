@@ -18,6 +18,7 @@ print_welcome
 # Initialize variables to hold the arguments
 COMMIT_HASH=""
 NO_PUSH=false
+KEEP_TEMP_BRANCH=false
 
 # Loop through all the arguments
 while [[ $# -gt 0 ]]
@@ -32,6 +33,11 @@ do
         # If the argument is the no-push or -np flag, set the variable to true
         --no-push|-np)
             NO_PUSH=true
+            shift # Move on to the next argument
+            ;;
+        # If the argument is the keep-temp-branch or -ktb flag, set the variable to true
+        --keep-temp-branch|-ktb)
+            KEEP_TEMP_BRANCH=true
             shift # Move on to the next argument
             ;;
         # If the argument is the help or -h flag, print usage instructions
@@ -100,8 +106,12 @@ echo -e "👷‍♂️ Rebasing '${CURRENT_BRANCH}' onto the temporary branch\n"
 git_silent checkout "${CURRENT_BRANCH}"
 git_silent rebase --no-update-refs "${TEMP_BRANCH}"
 
-echo -e "🔥 Removing the temporary branch: ${TEMP_BRANCH}\n"
-git_silent branch -D "${TEMP_BRANCH}"
+if $KEEP_TEMP_BRANCH; then
+  echo -e "✅ Keeping the temporary branch: ${TEMP_BRANCH} (as requested)\n"
+else
+  echo -e "🔥 Removing the temporary branch: ${TEMP_BRANCH}\n"
+  git_silent branch -D "${TEMP_BRANCH}"
+fi
 
 # Output the temporary branch
 echo -e "🎉 The rebase process has been completed successfully!"
